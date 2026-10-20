@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sniper Arena Script — Aimbot, ESP, Silent Aim &amp; Lua Injector</title>
+<meta name="description" content="Sniper Arena Script for Windows: aimbot, ESP, silent aim, wallhack, auto-fire, Lua injector and anti-ban bypass for sniper-arena matches." />
+<style>
+  :root {
+    --bg-deep: #070b1c;
+    --bg-mid: #101a3a;
+    --bg-char: #15161f;
+    --indigo: #6366f1;
+    --violet: #a855f7;
+    --cyan: #22d3ee;
+    --text: #e8ecf8;
+    --muted: #9aa6c4;
+    --card: rgba(255, 255, 255, 0.045);
+    --stroke: rgba(255, 255, 255, 0.09);
+    --radius: 18px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: "Segoe UI", "Inter", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(1100px 700px at 12% -8%, rgba(99, 102, 241, 0.32), transparent 62%),
+      radial-gradient(900px 620px at 92% 4%, rgba(168, 85, 247, 0.24), transparent 60%),
+      radial-gradient(1200px 900px at 50% 110%, rgba(34, 211, 238, 0.13), transparent 65%),
+      linear-gradient(160deg, var(--bg-deep) 0%, var(--bg-mid) 42%, var(--bg-char) 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection { background: rgba(99, 102, 241, 0.45); color: #fff; }
+
+  .wrap {
+    width: 100%;
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ---------------- NAV ---------------- */
+  .nav-shell {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 14px 0;
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    background: rgba(9, 13, 30, 0.62);
+    border-bottom: 1px solid var(--stroke);
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    font-size: 1.05rem;
+    white-space: nowrap;
+  }
+
+  .brand-mark {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    font-size: 1rem;
+    background: linear-gradient(135deg, var(--indigo), var(--violet));
+    box-shadow: 0 0 22px rgba(99, 102, 241, 0.55);
+  }
+
+  .brand span.grad {
+    background: linear-gradient(90deg, #c7d2fe, #a5b4fc 40%, #f0abfc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    list-style: none;
+    font-size: 0.92rem;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    position: relative;
+  }
+
+  .nav-links a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    height: 2px;
+    width: 0;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--indigo), var(--cyan));
+    transition: width 0.25s ease;
+  }
+
+  .nav-links a:hover { color: #fff; }
+  .nav-links a:hover::after { width: 100%; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    font-weight: 700;
+    font-size: 0.94rem;
+    padding: 12px 24px;
+    border-radius: 12px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    color: #fff;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6 55%, #a855f7);
+    box-shadow: 0 10px 28px -10px rgba(139, 92, 246, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 36px -10px rgba(139, 92, 246, 1), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  }
+
+  .btn-ghost {
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--stroke);
+    backdrop-filter: blur(8px);
+  }
+
+  .btn-ghost:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(255, 255, 255, 0.24);
+  }
+
+  .btn-nav { padding: 10px 20px; font-size: 0.88rem; }
+
+  /* ---------------- HERO ---------------- */
+  .hero {
+    padding: 88px 0 72px;
+    text-align: center;
+    position: relative;
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: -60px 10% auto 10%;
+    height: 340px;
+    background: radial-gradient(closest-side, rgba(99, 102, 241, 0.28), transparent 72%);
+    filter: blur(20px);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.35px;
+    color: #cdd6ff;
+    background: rgba(99, 102, 241, 0.12);
+    border: 1px solid rgba(129, 140, 248, 0.38);
+    box-shadow: 0 0 26px -8px rgba(99, 102, 241, 0.75);
+    margin-bottom: 28px;
+  }
+
+  .pill .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.16);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.18); }
+    50% { box-shadow: 0 0 0 7px rgba(74, 222, 128, 0.05); }
+  }
+
+  h1 {
+    font-size: clamp(2.1rem, 6vw, 4rem);
+    line-height: 1.08;
+    letter-spacing: -1.6px;
+    font-weight: 800;
+    margin-bottom: 22px;
+  }
+
+  .grad-text {
+    background: linear-gradient(100deg, #c7d2fe 0%, #818cf8 32%, #c084fc 64%, #67e8f9 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 34px rgba(139, 92, 246, 0.35));
+  }
+
+  .hero p.lead {
+    max-width: 660px;
+    margin: 0 auto 36px;
+    color: var(--muted);
+    font-size: clamp(0.98rem, 2.2vw, 1.1rem);
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 54px;
+  }
+
+  .hero-actions .btn { padding: 15px 32px; font-size: 1rem; }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .stat {
+    padding: 20px 14px;
+    border-radius: 14px;
+    background: var(--card);
+    border: 1px solid var(--stroke);
+    backdrop-filter: blur(10px);
+    transition: border-color 0.25s ease, transform 0.25s ease;
+  }
+
+  .stat:hover { border-color: rgba(129, 140, 248, 0.45); transform: translateY(-3px); }
+
+  .stat .val {
+    font-size: 1.18rem;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    background: linear-gradient(90deg, #e0e7ff, #a5b4fc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .stat .lbl {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 1.1px;
+    color: #7c88ab;
+    font-weight: 600;
+  }
+
+  /* ---------------- SECTIONS ---------------- */
+  section.block { padding: 76px 0; }
+
+  .sec-head { text-align: center; margin-bottom: 48px; }
+
+  .sec-kicker {
+    display: inline-block;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #818cf8;
+    margin-bottom: 12px;
+  }
+
+  h2 {
+    font-size: clamp(1.6rem, 4vw, 2.35rem);
+    letter-spacing: -0.9px;
+    font-weight: 800;
+    line-height: 1.18;
+  }
+
+  .sec-head p {
+    max-width: 580px;
+    margin: 14px auto 0;
+    color: var(--muted);
+    font-size: 0.97rem;
+  }
+
+  /* ---------------- FEATURES ---------------- */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    position: relative;
+    padding: 30px 26px 28px;
+    border-radius: var(--radius);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.02));
+    border: 1px solid var(--stroke);
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  .card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--indigo), var(--violet), var(--cyan));
+    opacity: 0.9;
+  }
+
+  .card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(129, 140, 248, 0.45);
+    box-shadow: 0 26px 48px -22px rgba(79, 70, 229, 0.75);
+  }
+
+  .card .ico {
+    display: grid;
+    place-items: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 13px;
+    font-size: 1.45rem;
+    margin-bottom: 18px;
+    background: rgba(99, 102, 241, 0.14);
+    border: 1px solid rgba(129, 140, 248, 0.28);
+  }
+
+  .card h3 {
+    font-size: 1.06rem;
+    font-weight: 700;
+    margin-bottom: 9px;
+    letter-spacing: -0.2px;
+  }
+
+  .card p {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  /* ---------------- HOW IT WORKS ---------------- */
+  .steps {
+    position: relative;
+    max-width: 720px;
+    margin: 0 auto;
+    padding-left: 34px;
+  }
+
+  .steps::before {
+    content: "";
+    position: absolute;
+    left: 15px;
+    top: 12px;
+    bottom: 12px;
+    width: 2px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, var(--indigo), var(--violet) 50%, var(--cyan));
+    opacity: 0.7;
+  }
+
+  .step {
+    position: relative;
+    padding: 0 0 38px 26px;
+  }
+
+  .step:last-child { padding-bottom: 0; }
+
+  .step .num {
+    position: absolute;
+    left: -34px;
+    top: -2px;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    font-size: 0.84rem;
+    font-weight: 800;
+    color: #fff;
+    background: linear-gradient(135deg, #4f46e5, #9333ea);
+    box-shadow: 0 0 0 5px rgba(12, 16, 36, 0.9), 0 0 26px rgba(124, 58, 237, 0.6);
+  }
+
+  .step h3 {
+    font-size: 1.06rem;
+    font-weight: 700;
+    margin-bottom: 7px;
+    letter-spacing: -0.2px;
+  }
+
+  .step p { color: var(--muted); font-size: 0.92rem; }
+
+  /* ---------------- FAQ ---------------- */
+  .faq {
+    max-width: 780px;
+    margin: 0 auto;
+    display: grid;
+    gap: 14px;
+  }
+
+  details {
+    border-radius: 14px;
+    background: var(--card);
+    border: 1px solid var(--stroke);
+    overflow: hidden;
+    transition: border-color 0.25s ease, background 0.25s ease;
+  }
+
+  details[open] {
+    border-color: rgba(129, 140, 248, 0.45);
+    background: rgba(99, 102, 241, 0.08);
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 19px 22px;
+    font-weight: 650;
+    font-size: 0.97rem;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    transition: color 0.2s ease;
+  }
+
+  summary::-webkit-details-marker { display: none; }
+  summary:hover { color: #c7d2fe; }
+
+  .plus {
+    flex: 0 0 auto;
+    position: relative;
+    width: 22px;
+    height: 22px;
+    transition: transform 0.32s cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+
+  .plus::before,
+  .plus::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background: #a5b4fc;
+    border-radius: 2px;
+    transform: translate(-50%, -50%);
+    transition: background 0.25s ease;
+  }
+
+  .plus::before { width: 14px; height: 2px; }
+  .plus::after { width: 2px; height: 14px; }
+
+  details[open] .plus { transform: rotate(45deg); }
+  details[open] .plus::before,
+  details[open] .plus::after { background: #f0abfc; }
+
+  details .answer {
+    padding: 0 22px 20px;
+    color: var(--muted);
+    font-size: 0.9rem;
+    max-width: 64ch;
+  }
+
+  /* ---------------- CTA BANNER ---------------- */
+  .cta-banner {
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+    padding: 66px 34px;
+    text-align: center;
+    background: linear-gradient(150deg, rgba(79, 70, 229, 0.3), rgba(147, 51, 234, 0.2) 52%, rgba(34, 211, 238, 0.13));
+    border: 1px solid rgba(129, 140, 248, 0.32);
+    box-shadow: 0 34px 90px -40px rgba(99, 102, 241, 0.9);
+  }
+
+  .cta-banner::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -40%;
+    width: 760px;
+    height: 760px;
+    transform: translateX(-50%);
+    background: radial-gradient(closest-side, rgba(168, 85, 247, 0.42), rgba(99, 102, 241, 0.16) 55%, transparent 72%);
+    pointer-events: none;
+  }
+
+  .cta-banner > * { position: relative; z-index: 1; }
+
+  .cta-banner h2 { margin-bottom: 14px; }
+
+  .cta-banner p {
+    max-width: 540px;
+    margin: 0 auto 32px;
+    color: #c2cbe8;
+    font-size: 0.97rem;
+  }
+
+  .cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  .cta-actions .btn { padding: 15px 32px; font-size: 1rem; }
+
+  .fineprint {
+    margin-top: 22px;
+    font-size: 0.78rem;
+    color: #8b97b8;
+    letter-spacing: 0.2px;
+  }
+
+  /* ---------------- FOOTER ---------------- */
+  footer {
+    border-top: 1px solid var(--stroke);
+    padding: 32px 0 40px;
+    margin-top: 20px;
+    background: rgba(7, 11, 28, 0.55);
+  }
+
+  .foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+    font-size: 0.86rem;
+    color: #8b97b8;
+  }
+
+  .foot a {
+    color: #a5b4fc;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+  }
+
+  .foot a:hover { color: #e0e7ff; }
+
+  .foot-links { display: flex; align-items: center; gap: 20px; }
+
+  /* ---------------- RESPONSIVE ---------------- */
+  @media (max-width: 900px) {
+    .features { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 0 18px; }
+    .nav-links { display: none; }
+    .hero { padding: 60px 0 54px; }
+    h1 { letter-spacing: -0.8px; }
+    .hero-actions .btn, .cta-actions .btn { width: 100%; }
+    .features { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: 1fr; }
+    section.block { padding: 56px 0; }
+    .cta-banner { padding: 48px 22px; border-radius: 20px; }
+    .steps { padding-left: 30px; }
+    .step { padding-left: 22px; }
+    .step .num { left: -30px; width: 30px; height: 30px; font-size: 0.78rem; }
+    .foot { flex-direction: column; text-align: center; }
+    .btn-nav { padding: 9px 16px; font-size: 0.82rem; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ================= NAV ================= -->
+  <div class="nav-shell">
+    <div class="wrap">
+      <nav class="nav" aria-label="Primary">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">🎯</div>
+          <span>Sniper<span class="grad">Arena</span></span>
+        </div>
+
+        <ul class="nav-links">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#how">How it works</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+
+        <a class="btn btn-primary btn-nav" href="https://gitscore.cc" target="_blank" rel="noopener">Download</a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ================= HERO ================= -->
+  <header class="hero">
+    <div class="wrap">
+      <div class="pill">
+        <span class="dot" aria-hidden="true"></span>
+        Sniper Arena Script · Windows Build
+      </div>
+
+      <h1>
+        Dominate Every Match with the<br />
+        <span class="grad-text">Sniper Arena Script</span>
+      </h1>
+
+      <p class="lead">
+        A precision-built Lua script suite for sniper-arena matches — aimbot, ESP, silent aim,
+        wallhack, auto-fire and a one-click Lua injector, wrapped in an anti-ban bypass that
+        keeps your account under the radar.
+      </p>
+
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="https://gitscore.cc" target="_blank" rel="noopener">⬇ Download for Windows</a>
+        <a class="btn btn-ghost" href="https://gitscore.cc" target="_blank" rel="noopener">⭐ View on GitHub</a>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="val">184,500+</span>
+          <span class="lbl">Downloads</span>
+        </div>
+        <div class="stat">
+          <span class="val">v4.2.0</span>
+          <span class="lbl">Latest Version</span>
+        </div>
+        <div class="stat">
+          <span class="val">Windows 10 / 11</span>
+          <span class="lbl">Platform</span>
+        </div>
+        <div class="stat">
+          <span class="val">Free &amp; Open Source</span>
+          <span class="lbl">License</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= FEATURES ================= -->
+  <section class="block" id="features">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="sec-kicker">Features</span>
+        <h2>Everything You Need to Own the Arena</h2>
+        <p>Six tightly integrated modules tuned specifically for sniper-arena gunfights and long-range duels.</p>
+      </div>
+
+      <div class="features">
+        <article class="card">
+          <div class="ico" aria-hidden="true">🎯</div>
+          <h3>Aimbot</h3>
+          <p>Pixel-accurate target locking with adjustable FOV, smoothness and bone priority — snap to heads at any sniper-arena range.</p>
+        </article>
+
+        <article class="card">
+          <div class="ico" aria-hidden="true">👁️</div>
+          <h3>ESP &amp; Wallhack</h3>
+          <p>See enemy
